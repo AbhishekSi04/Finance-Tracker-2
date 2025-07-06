@@ -77,7 +77,7 @@ export default function Dashboard({ transactions }) {
   return (
     <div className="space-y-4 sm:space-y-6">
       {/* Period Filter */}
-      {/* <div className="flex justify-center">
+      <div className="flex justify-center">
         <div className="inline-flex bg-gray-800 rounded-lg p-1 w-full max-w-sm">
           {[
             { value: 'all', label: 'All Time' },
@@ -98,7 +98,7 @@ export default function Dashboard({ transactions }) {
             </button>
           ))}
         </div>
-      </div> */}
+      </div>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">

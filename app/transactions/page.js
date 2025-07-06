@@ -6,6 +6,9 @@ import TransactionList from './TransactionList';
 import TransactionChart from './TransactionChart';
 import CategoryChart from './CategoryChart';
 import Dashboard from './Dashboard';
+import BudgetManager from './BudgetManager';
+import BudgetComparisonChart from './BudgetComparisonChart';
+import BudgetInsights from './BudgetInsights';
 import ErrorState from '../components/ErrorState';
 import Loader from '../components/Loader';
 import logo from '../../assets/Logo.png'
@@ -16,7 +19,14 @@ export default function TransactionsPage() {
   const [error, setError] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState(null);
-  const [activeView, setActiveView] = useState('dashboard'); // 'dashboard', 'transactions', 'charts'
+  const [activeView, setActiveView] = useState('dashboard'); // 'dashboard', 'transactions', 'charts', 'budgets'
+
+  // For budgets tab
+  const getCurrentMonth = () => {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  };
+  const [month, setMonth] = useState(getCurrentMonth());
 
   useEffect(() => {
     fetchTransactions();
@@ -155,22 +165,23 @@ export default function TransactionsPage() {
 
         {/* Navigation Tabs */}
         <div className="flex justify-center mb-6 sm:mb-8">
-          <div className="inline-flex bg-gray-800/50 backdrop-blur-sm rounded-lg p-1 w-full max-w-md">
+          <div className="flex bg-gray-800/50 backdrop-blur-sm rounded-lg p-1 w-full max-w-md overflow-x-auto space-x-2 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent">
             {[
               { value: 'dashboard', label: 'Dashboard', icon: '📊' },
               { value: 'transactions', label: 'Transactions', icon: '📝' },
-              { value: 'charts', label: 'Charts', icon: '📈' }
+              { value: 'charts', label: 'Charts', icon: '📈' },
+              { value: 'budgets', label: 'Budgets & Insights', icon: '💡' }
             ].map((tab) => (
               <button
                 key={tab.value}
                 onClick={() => setActiveView(tab.value)}
-                className={`flex-1 px-2 py-2 text-xs sm:text-sm font-medium rounded-md transition-all duration-200 flex items-center justify-center gap-1 sm:gap-2 ${
+                className={`flex-1 min-w-[120px] px-3 py-2 text-xs sm:text-sm font-medium rounded-md transition-all duration-200 flex items-center justify-center gap-1 sm:gap-2 whitespace-nowrap ${
                   activeView === tab.value
                     ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg'
                     : 'text-gray-400 hover:text-white hover:bg-gray-700'
                 }`}
               >
-                <span className="text-sm sm:text-base">{tab.icon}</span>
+                <span className="text-base">{tab.icon}</span>
                 <span className="truncate">{tab.label}</span>
               </button>
             ))}
@@ -178,18 +189,20 @@ export default function TransactionsPage() {
         </div>
 
         {/* Add Transaction Button */}
-        <div className="text-center mb-6 sm:mb-8">
-          <button
-            onClick={() => setShowForm(true)}
-            className="btn-primary inline-flex items-center gap-2"
-          >
-            <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-            </svg>
-            <span className="hidden sm:inline">Add New Transaction</span>
-            <span className="sm:hidden">Add Transaction</span>
-          </button>
-        </div>
+        {activeView !== 'budgets' && (
+          <div className="text-center mb-6 sm:mb-8">
+            <button
+              onClick={() => setShowForm(true)}
+              className="btn-primary inline-flex items-center gap-2"
+            >
+              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+              <span className="hidden sm:inline">Add New Transaction</span>
+              <span className="sm:hidden">Add Transaction</span>
+            </button>
+          </div>
+        )}
 
         {/* Form Modal */}
         {showForm && (
@@ -210,6 +223,24 @@ export default function TransactionsPage() {
         {/* Content Based on Active View */}
         {activeView === 'dashboard' && (
           <Dashboard transactions={transactions} />
+        )}
+
+        {activeView === 'budgets' && (
+          <div className="space-y-4 sm:space-y-6">
+            {/* Month Picker for Budgets */}
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-2">
+              <h2 className="text-lg font-bold text-white flex-1">Monthly Budgets & Insights</h2>
+              <input
+                type="month"
+                value={month}
+                onChange={e => setMonth(e.target.value)}
+                className="input-field w-40"
+              />
+            </div>
+            <BudgetManager month={month} />
+            <BudgetComparisonChart transactions={transactions} month={month} />
+            <BudgetInsights transactions={transactions} month={month} />
+          </div>
         )}
 
         {activeView === 'transactions' && (
