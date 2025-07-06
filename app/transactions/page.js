@@ -165,7 +165,7 @@ export default function TransactionsPage() {
 
         {/* Navigation Tabs */}
         <div className="flex justify-center mb-6 sm:mb-8">
-          <div className="flex bg-gray-800/50 backdrop-blur-sm rounded-lg p-1 w-full max-w-md overflow-x-auto space-x-2 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent">
+          <div className="flex bg-gray-800/50 backdrop-blur-sm rounded-lg p-1 w-full max-w-md overflow-x-auto space-x-2 hide-scrollbar-desktop">
             {[
               { value: 'dashboard', label: 'Dashboard', icon: '📊' },
               { value: 'transactions', label: 'Transactions', icon: '📝' },
